@@ -56,9 +56,9 @@ git clone https://github.com/NinoMiquelino/consulta-cnpj-app.git
 
 📋 Exemplos de CNPJ para Teste
 
-· 33.014.556/0001-96 - LOJAS AMERICANAS S.A.<br>
+· 33.014.556/0001-96 - LOJAS AMERICANAS<br>
 · 60.701.190/0001-04 - ITAU UNIBANCO<br>
-· 00.000.000/0001-91 - BANCO DO BRASIL SA
+· 00.000.000/0001-91 - BANCO DO BRASIL
 
 🛠️ Tecnologias Utilizadas
 
@@ -90,24 +90,24 @@ Seções da Aplicação
 
 Design Responsivo
 
-· Mobile: Layout em coluna única
-· Tablet: Ajuste progressivo dos grids
+· Mobile: Layout em coluna única<br>
+· Tablet: Ajuste progressivo dos grids<br>
 · Desktop: Layout multi-coluna otimizado
 
 🔧 Funcionalidades Técnicas
 
 Tratamento de Dados
 
-· Formatação automática de CNPJ (XX.XXX.XXX/XXXX-XX)
-· Formatação de datas no padrão brasileiro
-· Formatação de moeda (R$)
+· Formatação automática de CNPJ (XX.XXX.XXX/XXXX-XX)<br>
+· Formatação de datas no padrão brasileiro<br>
+· Formatação de moeda (R$)<br>
 · Validação de campos obrigatórios
 
 Gerenciamento de Estado
 
-· Loading durante consultas
-· Tratamento de erros da API
-· Limpeza automática de consultas anteriores
+· Loading durante consultas<br>
+· Tratamento de erros da API<br>
+· Limpeza automática de consultas anteriores<br>
 · Feedback visual para o usuário
 
 Integração com API
@@ -119,33 +119,33 @@ https://receitaws.com.br/v1/cnpj/33014556000196?callback=callback_123456789
 
 ⚠️ Limitações e Considerações
 
-· A API da ReceitaWS possui limitações de rate limiting
-· Dados dependem da atualização cadastral na Receita Federal
-· Consultas podem falhar durante picos de uso
+· A API da ReceitaWS possui limitações de rate limiting<br>
+· Dados dependem da atualização cadastral na Receita Federal<br>
+· Consultas podem falhar durante picos de uso<br>
 · Alguns CNPJs podem retornar dados incompletos
 
 🐛 Solução de Problemas
 
 Erro "Failed to fetch"
 
-· Verifique a conexão com internet
-· A API pode estar temporariamente indisponível
+· Verifique a conexão com internet<br>
+· A API pode estar temporariamente indisponível<br
 · Tente novamente após alguns segundos
 
 Dados Incompletos
 
-· Algumas empresas possuem informações limitadas na base pública
+· Algumas empresas possuem informações limitadas na base pública<br>
 · Campos não informados serão marcados como "Não informado"
 
 CNPJ Não Encontrado
 
-· Verifique se o CNPJ foi digitado corretamente
+· Verifique se o CNPJ foi digitado corretamente<br>
 · Confirme que o CNPJ existe na base da Receita Federal
 
 🔗 Links Úteis
 
-· [API ReceitaWS](https://receitaws.com.br/)
-· [Tailwind CSS](https://tailwindcss.com/)
+· [API ReceitaWS](https://receitaws.com.br/)<br>
+· [Tailwind CSS](https://tailwindcss.com/)<br>
 · [Documentação JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript)
 
 ---

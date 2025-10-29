@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de CNPJ - ReceitaWS</title>
+    <meta name="author" content="Onivaldo Miquelino">  
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Cabeçalho e Input -->
+        <header class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Consulta de Empresa</h1>
+            <div class="flex flex-col sm:flex-row gap-2 justify-center">
+                <input 
+                    type="text" 
+                    id="cnpjInput"
+                    placeholder="Digite o CNPJ (apenas números)" 
+                    class="flex-grow max-w-md px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                <button 
+                    id="consultarBtn"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg shadow transition duration-200 ease-in-out"
+                >
+                    Consultar
+                </button>
+            </div>
+        </header>
+
+        <main>
+            <!-- Container de Status -->
+            <div id="statusContainer" class="hidden mb-8">
+                <div id="situacaoBanner" class="text-white text-center py-4 rounded-lg shadow-md text-xl font-semibold">
+                    <!-- Texto da situação será injetado aqui -->
+                </div>
+            </div>
+
+            <!-- Loading -->
+            <div id="loading" class="hidden text-center">
+                <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                <p class="mt-2 text-gray-600">Consultando...</p>
+            </div>
+
+            <!-- Alertas de Erro -->
+            <div id="errorAlert" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert"></div>
+
+            <!-- Seção de Dados da Empresa -->
+            <div id="dadosEmpresa" class="hidden space-y-8">
+                <!-- Card de Dados Básicos -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden p-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4 pb-2 border-b">Dados da Empresa</h2>
+                    <div id="dadosBasicos" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Dados básicos serão injetados aqui -->
+                    </div>
+                </div>
+
+                <!-- Card de Atividade Principal -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden p-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4 pb-2 border-b">Atividade Principal</h2>
+                    <div id="atividadePrincipal">
+                        <!-- Atividade principal será injetada aqui -->
+                    </div>
+                </div>
+
+                <!-- Card de Atividades Secundárias -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden p-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4 pb-2 border-b">Atividades Secundárias</h2>
+                    <div id="atividadesSecundarias" class="space-y-4">
+                        <!-- Atividades secundárias serão injetadas aqui -->
+                    </div>
+                </div>
+
+                <!-- Card de Quadro Societário -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden p-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4 pb-2 border-b">Quadro Societário</h2>
+                    <div id="quadroSocietario" class="space-y-4">
+                        <!-- Quadro societário será injetado aqui -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Configuração para máscara de CNPJ e limpeza automática
+        document.getElementById('cnpjInput').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 14) value = value.substring(0, 14);
+            
+            if (value.length > 12) {
+                value = value.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+            } else if (value.length > 8) {
+                value = value.replace(/^(\d{2})(\d{3})(\d{3})(\d{0,4})/, "$1.$2.$3/$4");
+            } else if (value.length > 5) {
+                value = value.replace(/^(\d{2})(\d{3})(\d{0,3})/, "$1.$2.$3");
+            } else if (value.length > 2) {
+                value = value.replace(/^(\d{2})(\d{0,3})/, "$1.$2");
+            }
+            e.target.value = value;
+        });
+
+        // Limpar consulta anterior quando o usuário interagir com o campo
+        document.getElementById('cnpjInput').addEventListener('focus', function() {
+            clearPreviousResults();
+        });
+
+        document.getElementById('cnpjInput').addEventListener('click', function() {
+            clearPreviousResults();
+        });
+
+        document.getElementById('consultarBtn').addEventListener('click', consultarCNPJ);
+
+        // Função para criar um nome único de callback
+        function generateCallbackName() {
+            return 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        async function consultarCNPJ() {
+            const cnpjInput = document.getElementById('cnpjInput').value;
+            const cnpjLimpo = cnpjInput.replace(/\D/g, '');
+
+            // Validação básica de CNPJ
+            if (cnpjLimpo.length !== 14) {
+                showError('Por favor, digite um CNPJ válido com 14 dígitos.');
+                return;
+            }
+
+            // Mostrar loading e esconder outras seções
+            showLoading();
+            hideError();
+            hideResults();
+
+            try {
+                // Método 1: Usando JSONP para contornar problemas de CORS
+                await consultarComJSONP(cnpjLimpo);
+
+            } catch (error) {
+                console.error('Erro na consulta:', error);
+                showError(`Falha na consulta: ${error.message}`);
+                hideLoading();
+            }
+        }
+
+        function consultarComJSONP(cnpj) {
+            return new Promise((resolve, reject) => {
+                const callbackName = generateCallbackName();
+                
+                // Criar a função de callback global
+                window[callbackName] = function(data) {
+                    // Limpar o script e a função callback
+                    document.getElementById('jsonpScript')?.remove();
+                    delete window[callbackName];
+                    
+                    if (data.status === 'ERROR') {
+                        reject(new Error(data.message || 'Erro ao consultar CNPJ.'));
+                    } else {                  
+                        displayResults(data);
+                        resolve(data);
+                    }
+                    hideLoading();
+                };
+
+                // Criar e adicionar o script JSONP
+                const script = document.createElement('script');
+                script.id = 'jsonpScript';
+                script.src = `https://receitaws.com.br/v1/cnpj/${cnpj}?callback=${callbackName}`;
+                script.onerror = () => {
+                    reject(new Error('Erro ao carregar os dados da API.'));
+                    hideLoading();
+                };
+                
+                document.head.appendChild(script);
+            });
+        }
+
+        // Método alternativo usando proxy CORS (caso o JSONP não funcione)
+        async function consultarComProxy(cnpj) {
+            try {
+                // Usando um proxy CORS público como fallback
+                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                const apiUrl = `https://receitaws.com.br/v1/cnpj/${cnpj}`;
+                
+                const response = await fetch(proxyUrl + apiUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`Erro na requisição: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.status === 'ERROR') {
+                    throw new Error(data.message || 'Erro ao consultar CNPJ.');
+                }                              
+
+                displayResults(data);
+                
+            } catch (error) {
+                // Se o proxy principal falhar, tente outro
+                try {
+                    const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://receitaws.com.br/v1/cnpj/${cnpj}`)}`);
+                    
+                    if (!response.ok) throw new Error('Fallback também falhou');
+                    
+                    const data = await response.json();
+                    displayResults(data);
+                    
+                } catch (fallbackError) {
+                    throw new Error('Não foi possível acessar a API. Tente novamente mais tarde.');
+                }
+            }
+        }
+
+        function displayResults(empresa) {
+            // Atualizar banner de situação
+            updateSituacaoBanner(empresa.situacao);
+            
+            // Preencher dados básicos
+            fillDadosBasicos(empresa);
+            
+            // Preencher atividades
+            fillAtividades(empresa);
+            
+            // Preencher quadro societário
+            fillQuadroSocietario(empresa);
+            
+            // Mostrar seção de resultados
+            document.getElementById('dadosEmpresa').classList.remove('hidden');
+        }
+
+        function updateSituacaoBanner(situacao) {
+            const banner = document.getElementById('situacaoBanner');
+            const statusContainer = document.getElementById('statusContainer');
+            
+            // Limpar classes anteriores
+            banner.className = 'text-white text-center py-4 rounded-lg shadow-md text-xl font-semibold';
+            statusContainer.className = 'mb-8';
+            
+            banner.textContent = `SITUAÇÃO: ${situacao || 'NÃO INFORMADA'}`;
+            
+            // Aplicar cor conforme especificado
+            if (situacao === 'ATIVA') {
+                banner.classList.add('bg-green-600');
+            } else {
+                banner.classList.add('bg-red-600');
+            }
+            
+            statusContainer.classList.remove('hidden');
+        }
+
+        function fillDadosBasicos(empresa) {
+            const container = document.getElementById('dadosBasicos');
+            const dados = [
+                { label: 'Nome Fantasia', value: empresa.fantasia || 'Não informado' },
+                { label: 'Razão Social', value: empresa.nome || 'Não informado' },
+                { label: 'CNPJ', value: formatCNPJ(empresa.cnpj) },
+                { label: 'Data de Abertura', value: formatDateAbertura(empresa.abertura) },
+                { label: 'Natureza Jurídica', value: empresa.natureza_juridica || 'Não informado' },
+                { label: 'Capital Social', value: formatCurrency(empresa.capital_social) },
+                { label: 'CEP', value: formatCEP(empresa.cep) },
+                { label: 'Endereço', value: `${empresa.logradouro || ''} ${empresa.numero || ''} ${empresa.complemento || ''}`.trim() || 'Não informado' },
+                { label: 'Bairro', value: empresa.bairro || 'Não informado' },
+                { label: 'Município', value: `${empresa.municipio || ''} - ${empresa.uf || ''}` },
+                { label: 'Telefone', value: formatPhone(empresa.telefone) },
+                { label: 'Email', value: empresa.email || 'Não informado' },
+                { label: 'Situação Cadastral', value: empresa.situacao || 'Não informado' },
+                { label: 'Data da Situação Cadastral', value: formatDate(empresa.data_situacao) },
+                { label: 'Motivo da Situação Cadastral', value: empresa.motivo_situacao || 'Não informado' },
+                { label: 'Situação Especial', value: empresa.situacao_especial || 'Não informado' },
+                { label: 'Data da Situação Especial', value: formatDate(empresa.data_situacao_especial) },
+                { label: 'Última Atualização', value: formatDateTime(empresa.ultima_atualizacao) }
+            ].filter(item => item.value !== 'Não informado'); // Filtra campos não informados
+
+            container.innerHTML = dados.map(item => `
+                <div class="py-2 border-b border-gray-100">
+                    <dt class="text-sm font-medium text-gray-500">${item.label}</dt>
+                    <dd class="mt-1 text-sm text-gray-900 break-words">${item.value}</dd>
+                </div>
+            `).join('');
+        }
+
+        function fillAtividades(empresa) {
+            // Atividade Principal
+            const atividadePrincipalContainer = document.getElementById('atividadePrincipal');
+            if (empresa.atividade_principal && empresa.atividade_principal.length > 0) {
+                atividadePrincipalContainer.innerHTML = empresa.atividade_principal.map(atv => `
+                    <div class="py-3 border-b border-gray-100 last:border-b-0">
+                        <p class="font-medium text-gray-800">${atv.text || 'Não informado'}</p>
+                        <p class="text-sm text-gray-600">Código: ${atv.code || 'N/A'}</p>
+                    </div>
+                `).join('');
+            } else {
+                atividadePrincipalContainer.innerHTML = '<p class="text-gray-500">Nenhuma atividade principal informada.</p>';
+            }
+
+            // Atividades Secundárias
+            const atividadesSecundariasContainer = document.getElementById('atividadesSecundarias');
+            if (empresa.atividades_secundarias && empresa.atividades_secundarias.length > 0) {
+                atividadesSecundariasContainer.innerHTML = empresa.atividades_secundarias.map(atv => `
+                    <div class="py-3 border-b border-gray-100 last:border-b-0">
+                        <p class="font-medium text-gray-800">${atv.text || 'Não informado'}</p>
+                        <p class="text-sm text-gray-600">Código: ${atv.code || 'N/A'}</p>
+                    </div>
+                `).join('');
+            } else {
+                atividadesSecundariasContainer.innerHTML = '<p class="text-gray-500">Nenhuma atividade secundária informada.</p>';
+            }
+        }
+
+        function fillQuadroSocietario(empresa) {
+            const container = document.getElementById('quadroSocietario');
+            
+            if (empresa.qsa && empresa.qsa.length > 0) {
+                container.innerHTML = empresa.qsa.map(socio => `
+                    <div class="py-4 border-b border-gray-100 last:border-b-0">
+                        <p class="font-medium text-gray-800">${socio.nome || 'Nome não informado'}</p>
+                        <p class="text-sm text-gray-600">Qualificação: ${socio.qual || 'Não informada'}</p>
+                        <p class="text-sm text-gray-600">País: ${socio.pais || 'Não informado'}</p>
+                        ${socio.nome_rep_legal ? `<p class="text-sm text-gray-600">Representante Legal: ${socio.nome_rep_legal}</p>` : ''}
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<p class="text-gray-500">Nenhum sócio listado no quadro societário.</p>';
+            }
+        }
+
+        // Função específica para formatar Data de Abertura
+        function formatDateAbertura(dateString) {
+            if (!dateString) return 'Não informada';
+            
+            try {
+                // A API retorna a data no formato "YYYY-MM-DD"
+                if (dateString.includes('-')) {
+                    const [year, month, day] = dateString.split('-');
+                    const date = new Date(year, month - 1, day);
+                    return date.toLocaleDateString('pt-BR');
+                }
+                
+                // Fallback para outros formatos
+                const date = new Date(dateString);
+                if (!isNaN(date.getTime())) {
+                    return date.toLocaleDateString('pt-BR');
+                }
+                
+                return dateString; // Retorna o valor original se não conseguir parsear
+            } catch {
+                return dateString; // Retorna o valor original em caso de erro
+            }
+        }
+
+        // Funções auxiliares
+        function formatCNPJ(cnpj) {
+            if (!cnpj) return 'Não informado';
+            const str = cnpj.toString().padStart(14, '0');
+            return str.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+        }
+
+        function formatCEP(cep) {
+            if (!cep) return 'Não informado';
+            const str = cep.toString().replace(/\D/g, '');
+            if (str.length === 8) {
+                return str.replace(/^(\d{5})(\d{3})/, "$1-$2");
+            }
+            return str;
+        }
+
+        function formatPhone(telefone) {
+            if (!telefone) return 'Não informado';
+            const str = telefone.replace(/\D/g, '');
+            if (str.length === 11) {
+                return str.replace(/^(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+            } else if (str.length === 10) {
+                return str.replace(/^(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+            }
+            return telefone;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Não informada';
+            try {
+                // Tenta diferentes formatos de data
+                const date = new Date(dateString);
+                if (!isNaN(date.getTime())) {
+                    return date.toLocaleDateString('pt-BR');
+                }
+                
+                // Tenta formato brasileiro
+                if (dateString.includes('/')) {
+                    const [day, month, year] = dateString.split('/');
+                    const formattedDate = new Date(year, month - 1, day);
+                    if (!isNaN(formattedDate.getTime())) {
+                        return formattedDate.toLocaleDateString('pt-BR');
+                    }
+                }
+                
+                return dateString; // Retorna o valor original se não conseguir parsear
+            } catch {
+                return dateString; // Retorna o valor original em caso de erro
+            }
+        }
+
+        function formatDateTime(dateTimeString) {
+            if (!dateTimeString) return 'Não informada';
+            try {
+                const date = new Date(dateTimeString);
+                if (!isNaN(date.getTime())) {
+                    return date.toLocaleString('pt-BR');
+                }
+                return dateTimeString;
+            } catch {
+                return dateTimeString;
+            }
+        }
+
+        function formatCurrency(value) {
+            if (!value) return 'Não informado';
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value);
+        }
+
+        // Função para limpar resultados anteriores
+        function clearPreviousResults() {
+            hideResults();
+            hideError();
+            
+            // Limpa o banner de situação
+            const banner = document.getElementById('situacaoBanner');
+            banner.className = 'text-white text-center py-4 rounded-lg shadow-md text-xl font-semibold';
+        }
+
+        // Funções para controle de UI
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+        }
+
+        function showError(message) {
+            const errorAlert = document.getElementById('errorAlert');
+            errorAlert.textContent = message;
+            errorAlert.classList.remove('hidden');
+        }
+
+        function hideError() {
+            document.getElementById('errorAlert').classList.add('hidden');
+        }
+
+        function hideResults() {
+            document.getElementById('dadosEmpresa').classList.add('hidden');
+            document.getElementById('statusContainer').classList.add('hidden');
+        }
+
+        // Adicionar evento de Enter no input
+        document.getElementById('cnpjInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                consultarCNPJ();
+            }
+        });
+    </script>
+</body>
+</html>    

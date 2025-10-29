@@ -56,16 +56,16 @@ git clone https://github.com/NinoMiquelino/consulta-cnpj-app.git
 
 📋 Exemplos de CNPJ para Teste
 
-· 33.014.556/0001-96 - LOJAS AMERICANAS S.A.
-· 60.701.190/0001-04 - ITAU UNIBANCO
+· 33.014.556/0001-96 - LOJAS AMERICANAS S.A.<br>
+· 60.701.190/0001-04 - ITAU UNIBANCO<br>
 · 00.000.000/0001-91 - BANCO DO BRASIL SA
 
 🛠️ Tecnologias Utilizadas
 
-· JavaScript ES6+ - Lógica da aplicação e consumo de API
-· Tailwind CSS - Framework CSS para estilização responsiva
-· HTML5 - Estrutura semântica
-· ReceitaWS API - API pública para consulta de CNPJ
+· JavaScript ES6+ - Lógica da aplicação e consumo de API<br>
+· Tailwind CSS - Framework CSS para estilização responsiva<br>
+· HTML5 - Estrutura semântica<br>
+· ReceitaWS API - API pública para consulta de CNPJ<br>
 · JSONP - Contorno de políticas CORS
 
 📁 Estrutura do Projeto

@@ -56,7 +56,7 @@ git clone https://github.com/NinoMiquelino/consulta-cnpj-app.git
 
 📋 Exemplos de CNPJ para Teste
 
-· 33.014.556/0001-96 - LOJAS AMERICANAS<br>
+· 33.014.556/0001-96 - AMERICANAS<br>
 · 60.701.190/0001-04 - ITAU UNIBANCO<br>
 · 00.000.000/0001-91 - BANCO DO BRASIL
 
@@ -129,7 +129,7 @@ https://receitaws.com.br/v1/cnpj/33014556000196?callback=callback_123456789
 Erro "Failed to fetch"
 
 · Verifique a conexão com internet<br>
-· A API pode estar temporariamente indisponível<br
+· A API pode estar temporariamente indisponível<br>
 · Tente novamente após alguns segundos
 
 Dados Incompletos
@@ -144,8 +144,8 @@ CNPJ Não Encontrado
 
 🔗 Links Úteis
 
-· [API ReceitaWS](https://receitaws.com.br/)<br>
-· [Tailwind CSS](https://tailwindcss.com/)<br>
+· [API ReceitaWS](https://receitaws.com.br/)<br><br>
+· [Tailwind CSS](https://tailwindcss.com/)<br><br>
 · [Documentação JavaScript](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript)
 
 ---

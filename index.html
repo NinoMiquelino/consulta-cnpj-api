@@ -9,14 +9,14 @@
 </head>
 <body class="bg-gray-100 min-h-screen p-4 md:p-8">
     <div class="max-w-4xl mx-auto">
-        <!-- CabeÁalho e Input -->
+        <!-- Cabe√ßalho e Input -->
         <header class="text-center mb-12">
             <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Consulta de Empresa</h1>
             <div class="flex flex-col sm:flex-row gap-2 justify-center">
                 <input 
                     type="text" 
                     id="cnpjInput"
-                    placeholder="Digite o CNPJ (apenas n˙meros)" 
+                    placeholder="Digite o CNPJ (apenas n√∫meros)" 
                     class="flex-grow max-w-md px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                 <button 
@@ -32,7 +32,7 @@
             <!-- Container de Status -->
             <div id="statusContainer" class="hidden mb-8">
                 <div id="situacaoBanner" class="text-white text-center py-4 rounded-lg shadow-md text-xl font-semibold">
-                    <!-- Texto da situaÁ„o ser· injetado aqui -->
+                    <!-- Texto da situa√ß√£o ser√° injetado aqui -->
                 </div>
             </div>
 
@@ -45,13 +45,13 @@
             <!-- Alertas de Erro -->
             <div id="errorAlert" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert"></div>
 
-            <!-- SeÁ„o de Dados da Empresa -->
+            <!-- Se√ß√£o de Dados da Empresa -->
             <div id="dadosEmpresa" class="hidden space-y-8">
-                <!-- Card de Dados B·sicos -->
+                <!-- Card de Dados B√°sicos -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden p-6">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-4 pb-2 border-b">Dados da Empresa</h2>
                     <div id="dadosBasicos" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Dados b·sicos ser„o injetados aqui -->
+                        <!-- Dados b√°sicos ser√£o injetados aqui -->
                     </div>
                 </div>
 
@@ -59,23 +59,23 @@
                 <div class="bg-white rounded-xl shadow-md overflow-hidden p-6">
                     <h2 class="text-2xl font-semibold text-gray-800 mb-4 pb-2 border-b">Atividade Principal</h2>
                     <div id="atividadePrincipal">
-                        <!-- Atividade principal ser· injetada aqui -->
+                        <!-- Atividade principal ser√° injetada aqui -->
                     </div>
                 </div>
 
-                <!-- Card de Atividades Secund·rias -->
+                <!-- Card de Atividades Secund√°rias -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden p-6">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-4 pb-2 border-b">Atividades Secund·rias</h2>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4 pb-2 border-b">Atividades Secund√°rias</h2>
                     <div id="atividadesSecundarias" class="space-y-4">
-                        <!-- Atividades secund·rias ser„o injetadas aqui -->
+                        <!-- Atividades secund√°rias ser√£o injetadas aqui -->
                     </div>
                 </div>
 
-                <!-- Card de Quadro Societ·rio -->
+                <!-- Card de Quadro Societ√°rio -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden p-6">
-                    <h2 class="text-2xl font-semibold text-gray-800 mb-4 pb-2 border-b">Quadro Societ·rio</h2>
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4 pb-2 border-b">Quadro Societ√°rio</h2>
                     <div id="quadroSocietario" class="space-y-4">
-                        <!-- Quadro societ·rio ser· injetado aqui -->
+                        <!-- Quadro societ√°rio ser√° injetado aqui -->
                     </div>
                 </div>
             </div>
@@ -83,7 +83,7 @@
     </div>
 
     <script>
-        // ConfiguraÁ„o para m·scara de CNPJ e limpeza autom·tica
+        // Configura√ß√£o para m√°scara de CNPJ e limpeza autom√°tica
         document.getElementById('cnpjInput').addEventListener('input', function (e) {
             let value = e.target.value.replace(/\D/g, '');
             if (value.length > 14) value = value.substring(0, 14);
@@ -100,7 +100,7 @@
             e.target.value = value;
         });
 
-        // Limpar consulta anterior quando o usu·rio interagir com o campo
+        // Limpar consulta anterior quando o usu√°rio interagir com o campo
         document.getElementById('cnpjInput').addEventListener('focus', function() {
             clearPreviousResults();
         });
@@ -111,7 +111,7 @@
 
         document.getElementById('consultarBtn').addEventListener('click', consultarCNPJ);
 
-        // FunÁ„o para criar um nome ˙nico de callback
+        // Fun√ß√£o para criar um nome √∫nico de callback
         function generateCallbackName() {
             return 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         }
@@ -120,19 +120,19 @@
             const cnpjInput = document.getElementById('cnpjInput').value;
             const cnpjLimpo = cnpjInput.replace(/\D/g, '');
 
-            // ValidaÁ„o b·sica de CNPJ
+            // Valida√ß√£o b√°sica de CNPJ
             if (cnpjLimpo.length !== 14) {
-                showError('Por favor, digite um CNPJ v·lido com 14 dÌgitos.');
+                showError('Por favor, digite um CNPJ v√°lido com 14 d√≠gitos.');
                 return;
             }
 
-            // Mostrar loading e esconder outras seÁıes
+            // Mostrar loading e esconder outras se√ß√µes
             showLoading();
             hideError();
             hideResults();
 
             try {
-                // MÈtodo 1: Usando JSONP para contornar problemas de CORS
+                // M√©todo 1: Usando JSONP para contornar problemas de CORS
                 await consultarComJSONP(cnpjLimpo);
 
             } catch (error) {
@@ -146,9 +146,9 @@
             return new Promise((resolve, reject) => {
                 const callbackName = generateCallbackName();
                 
-                // Criar a funÁ„o de callback global
+                // Criar a fun√ß√£o de callback global
                 window[callbackName] = function(data) {
-                    // Limpar o script e a funÁ„o callback
+                    // Limpar o script e a fun√ß√£o callback
                     document.getElementById('jsonpScript')?.remove();
                     delete window[callbackName];
                     
@@ -174,17 +174,17 @@
             });
         }
 
-        // MÈtodo alternativo usando proxy CORS (caso o JSONP n„o funcione)
+        // M√©todo alternativo usando proxy CORS (caso o JSONP n√£o funcione)
         async function consultarComProxy(cnpj) {
             try {
-                // Usando um proxy CORS p˙blico como fallback
+                // Usando um proxy CORS p√∫blico como fallback
                 const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
                 const apiUrl = `https://receitaws.com.br/v1/cnpj/${cnpj}`;
                 
                 const response = await fetch(proxyUrl + apiUrl);
                 
                 if (!response.ok) {
-                    throw new Error(`Erro na requisiÁ„o: ${response.status}`);
+                    throw new Error(`Erro na requisi√ß√£o: ${response.status}`);
                 }
 
                 const data = await response.json();
@@ -200,31 +200,31 @@
                 try {
                     const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://receitaws.com.br/v1/cnpj/${cnpj}`)}`);
                     
-                    if (!response.ok) throw new Error('Fallback tambÈm falhou');
+                    if (!response.ok) throw new Error('Fallback tamb√©m falhou');
                     
                     const data = await response.json();
                     displayResults(data);
                     
                 } catch (fallbackError) {
-                    throw new Error('N„o foi possÌvel acessar a API. Tente novamente mais tarde.');
+                    throw new Error('N√£o foi poss√≠vel acessar a API. Tente novamente mais tarde.');
                 }
             }
         }
 
         function displayResults(empresa) {
-            // Atualizar banner de situaÁ„o
+            // Atualizar banner de situa√ß√£o
             updateSituacaoBanner(empresa.situacao);
             
-            // Preencher dados b·sicos
+            // Preencher dados b√°sicos
             fillDadosBasicos(empresa);
             
             // Preencher atividades
             fillAtividades(empresa);
             
-            // Preencher quadro societ·rio
+            // Preencher quadro societ√°rio
             fillQuadroSocietario(empresa);
             
-            // Mostrar seÁ„o de resultados
+            // Mostrar se√ß√£o de resultados
             document.getElementById('dadosEmpresa').classList.remove('hidden');
         }
 
@@ -236,7 +236,7 @@
             banner.className = 'text-white text-center py-4 rounded-lg shadow-md text-xl font-semibold';
             statusContainer.className = 'mb-8';
             
-            banner.textContent = `SITUA«√O: ${situacao || 'N√O INFORMADA'}`;
+            banner.textContent = `SITUA√á√ÉO: ${situacao || 'N√ÉO INFORMADA'}`;
             
             // Aplicar cor conforme especificado
             if (situacao === 'ATIVA') {
@@ -251,25 +251,25 @@
         function fillDadosBasicos(empresa) {
             const container = document.getElementById('dadosBasicos');
             const dados = [
-                { label: 'Nome Fantasia', value: empresa.fantasia || 'N„o informado' },
-                { label: 'Raz„o Social', value: empresa.nome || 'N„o informado' },
+                { label: 'Nome Fantasia', value: empresa.fantasia || 'N√£o informado' },
+                { label: 'Raz√£o Social', value: empresa.nome || 'N√£o informado' },
                 { label: 'CNPJ', value: formatCNPJ(empresa.cnpj) },
                 { label: 'Data de Abertura', value: formatDateAbertura(empresa.abertura) },
-                { label: 'Natureza JurÌdica', value: empresa.natureza_juridica || 'N„o informado' },
+                { label: 'Natureza Jur√≠dica', value: empresa.natureza_juridica || 'N√£o informado' },
                 { label: 'Capital Social', value: formatCurrency(empresa.capital_social) },
                 { label: 'CEP', value: formatCEP(empresa.cep) },
-                { label: 'EndereÁo', value: `${empresa.logradouro || ''} ${empresa.numero || ''} ${empresa.complemento || ''}`.trim() || 'N„o informado' },
-                { label: 'Bairro', value: empresa.bairro || 'N„o informado' },
-                { label: 'MunicÌpio', value: `${empresa.municipio || ''} - ${empresa.uf || ''}` },
+                { label: 'Endere√ßo', value: `${empresa.logradouro || ''} ${empresa.numero || ''} ${empresa.complemento || ''}`.trim() || 'N√£o informado' },
+                { label: 'Bairro', value: empresa.bairro || 'N√£o informado' },
+                { label: 'Munic√≠pio', value: `${empresa.municipio || ''} - ${empresa.uf || ''}` },
                 { label: 'Telefone', value: formatPhone(empresa.telefone) },
-                { label: 'Email', value: empresa.email || 'N„o informado' },
-                { label: 'SituaÁ„o Cadastral', value: empresa.situacao || 'N„o informado' },
-                { label: 'Data da SituaÁ„o Cadastral', value: formatDate(empresa.data_situacao) },
-                { label: 'Motivo da SituaÁ„o Cadastral', value: empresa.motivo_situacao || 'N„o informado' },
-                { label: 'SituaÁ„o Especial', value: empresa.situacao_especial || 'N„o informado' },
-                { label: 'Data da SituaÁ„o Especial', value: formatDate(empresa.data_situacao_especial) },
-                { label: '⁄ltima AtualizaÁ„o', value: formatDateTime(empresa.ultima_atualizacao) }
-            ].filter(item => item.value !== 'N„o informado'); // Filtra campos n„o informados
+                { label: 'Email', value: empresa.email || 'N√£o informado' },
+                { label: 'Situa√ß√£o Cadastral', value: empresa.situacao || 'N√£o informado' },
+                { label: 'Data da Situa√ß√£o Cadastral', value: formatDate(empresa.data_situacao) },
+                { label: 'Motivo da Situa√ß√£o Cadastral', value: empresa.motivo_situacao || 'N√£o informado' },
+                { label: 'Situa√ß√£o Especial', value: empresa.situacao_especial || 'N√£o informado' },
+                { label: 'Data da Situa√ß√£o Especial', value: formatDate(empresa.data_situacao_especial) },
+                { label: '√öltima Atualiza√ß√£o', value: formatDateTime(empresa.ultima_atualizacao) }
+            ].filter(item => item.value !== 'N√£o informado'); // Filtra campos n√£o informados
 
             container.innerHTML = dados.map(item => `
                 <div class="py-2 border-b border-gray-100">
@@ -285,25 +285,25 @@
             if (empresa.atividade_principal && empresa.atividade_principal.length > 0) {
                 atividadePrincipalContainer.innerHTML = empresa.atividade_principal.map(atv => `
                     <div class="py-3 border-b border-gray-100 last:border-b-0">
-                        <p class="font-medium text-gray-800">${atv.text || 'N„o informado'}</p>
-                        <p class="text-sm text-gray-600">CÛdigo: ${atv.code || 'N/A'}</p>
+                        <p class="font-medium text-gray-800">${atv.text || 'N√£o informado'}</p>
+                        <p class="text-sm text-gray-600">C√≥digo: ${atv.code || 'N/A'}</p>
                     </div>
                 `).join('');
             } else {
                 atividadePrincipalContainer.innerHTML = '<p class="text-gray-500">Nenhuma atividade principal informada.</p>';
             }
 
-            // Atividades Secund·rias
+            // Atividades Secund√°rias
             const atividadesSecundariasContainer = document.getElementById('atividadesSecundarias');
             if (empresa.atividades_secundarias && empresa.atividades_secundarias.length > 0) {
                 atividadesSecundariasContainer.innerHTML = empresa.atividades_secundarias.map(atv => `
                     <div class="py-3 border-b border-gray-100 last:border-b-0">
-                        <p class="font-medium text-gray-800">${atv.text || 'N„o informado'}</p>
-                        <p class="text-sm text-gray-600">CÛdigo: ${atv.code || 'N/A'}</p>
+                        <p class="font-medium text-gray-800">${atv.text || 'N√£o informado'}</p>
+                        <p class="text-sm text-gray-600">C√≥digo: ${atv.code || 'N/A'}</p>
                     </div>
                 `).join('');
             } else {
-                atividadesSecundariasContainer.innerHTML = '<p class="text-gray-500">Nenhuma atividade secund·ria informada.</p>';
+                atividadesSecundariasContainer.innerHTML = '<p class="text-gray-500">Nenhuma atividade secund√°ria informada.</p>';
             }
         }
 
@@ -313,20 +313,20 @@
             if (empresa.qsa && empresa.qsa.length > 0) {
                 container.innerHTML = empresa.qsa.map(socio => `
                     <div class="py-4 border-b border-gray-100 last:border-b-0">
-                        <p class="font-medium text-gray-800">${socio.nome || 'Nome n„o informado'}</p>
-                        <p class="text-sm text-gray-600">QualificaÁ„o: ${socio.qual || 'N„o informada'}</p>
-                        <p class="text-sm text-gray-600">PaÌs: ${socio.pais || 'N„o informado'}</p>
+                        <p class="font-medium text-gray-800">${socio.nome || 'Nome n√£o informado'}</p>
+                        <p class="text-sm text-gray-600">Qualifica√ß√£o: ${socio.qual || 'N√£o informada'}</p>
+                        <p class="text-sm text-gray-600">Pa√≠s: ${socio.pais || 'N√£o informado'}</p>
                         ${socio.nome_rep_legal ? `<p class="text-sm text-gray-600">Representante Legal: ${socio.nome_rep_legal}</p>` : ''}
                     </div>
                 `).join('');
             } else {
-                container.innerHTML = '<p class="text-gray-500">Nenhum sÛcio listado no quadro societ·rio.</p>';
+                container.innerHTML = '<p class="text-gray-500">Nenhum s√≥cio listado no quadro societ√°rio.</p>';
             }
         }
 
-        // FunÁ„o especÌfica para formatar Data de Abertura
+        // Fun√ß√£o espec√≠fica para formatar Data de Abertura
         function formatDateAbertura(dateString) {
-            if (!dateString) return 'N„o informada';
+            if (!dateString) return 'N√£o informada';
             
             try {
                 // A API retorna a data no formato "YYYY-MM-DD"
@@ -342,21 +342,21 @@
                     return date.toLocaleDateString('pt-BR');
                 }
                 
-                return dateString; // Retorna o valor original se n„o conseguir parsear
+                return dateString; // Retorna o valor original se n√£o conseguir parsear
             } catch {
                 return dateString; // Retorna o valor original em caso de erro
             }
         }
 
-        // FunÁıes auxiliares
+        // Fun√ß√µes auxiliares
         function formatCNPJ(cnpj) {
-            if (!cnpj) return 'N„o informado';
+            if (!cnpj) return 'N√£o informado';
             const str = cnpj.toString().padStart(14, '0');
             return str.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
         }
 
         function formatCEP(cep) {
-            if (!cep) return 'N„o informado';
+            if (!cep) return 'N√£o informado';
             const str = cep.toString().replace(/\D/g, '');
             if (str.length === 8) {
                 return str.replace(/^(\d{5})(\d{3})/, "$1-$2");
@@ -365,7 +365,7 @@
         }
 
         function formatPhone(telefone) {
-            if (!telefone) return 'N„o informado';
+            if (!telefone) return 'N√£o informado';
             const str = telefone.replace(/\D/g, '');
             if (str.length === 11) {
                 return str.replace(/^(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
@@ -376,7 +376,7 @@
         }
 
         function formatDate(dateString) {
-            if (!dateString) return 'N„o informada';
+            if (!dateString) return 'N√£o informada';
             try {
                 // Tenta diferentes formatos de data
                 const date = new Date(dateString);
@@ -393,14 +393,14 @@
                     }
                 }
                 
-                return dateString; // Retorna o valor original se n„o conseguir parsear
+                return dateString; // Retorna o valor original se n√£o conseguir parsear
             } catch {
                 return dateString; // Retorna o valor original em caso de erro
             }
         }
 
         function formatDateTime(dateTimeString) {
-            if (!dateTimeString) return 'N„o informada';
+            if (!dateTimeString) return 'N√£o informada';
             try {
                 const date = new Date(dateTimeString);
                 if (!isNaN(date.getTime())) {
@@ -413,24 +413,24 @@
         }
 
         function formatCurrency(value) {
-            if (!value) return 'N„o informado';
+            if (!value) return 'N√£o informado';
             return new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
                 currency: 'BRL'
             }).format(value);
         }
 
-        // FunÁ„o para limpar resultados anteriores
+        // Fun√ß√£o para limpar resultados anteriores
         function clearPreviousResults() {
             hideResults();
             hideError();
             
-            // Limpa o banner de situaÁ„o
+            // Limpa o banner de situa√ß√£o
             const banner = document.getElementById('situacaoBanner');
             banner.className = 'text-white text-center py-4 rounded-lg shadow-md text-xl font-semibold';
         }
 
-        // FunÁıes para controle de UI
+        // Fun√ß√µes para controle de UI
         function showLoading() {
             document.getElementById('loading').classList.remove('hidden');
         }
